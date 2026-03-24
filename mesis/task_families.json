@@ -1,0 +1,136 @@
+{
+  "benchmark": "MESIS",
+  "target_tasks_per_category": 100,
+  "categories": [
+    {
+      "category": "A",
+      "name": "meta_interpreter",
+      "task_definition": "实现可解释同语言子集程序的元解释器，支持至少 lambda/define/if/begin 与词法作用域。",
+      "environment_dependencies": {
+        "runtime": ["python3>=3.10", "guile>=3.0 (optional)", "node>=20 (optional)"],
+        "tools": ["bash", "timeout", "diff"],
+        "limits": {
+          "max_cpu_seconds": 5,
+          "max_memory_mb": 256
+        }
+      },
+      "validation_scheme": {
+        "checks": [
+          "直执行 vs 解释执行输出一致",
+          "嵌套解释深度>=2",
+          "无多余stdout内容"
+        ],
+        "failure_modes": ["parsing_error", "environment_error", "recursion_failure", "io_misrouting"]
+      },
+      "generation": {
+        "count": 100,
+        "levels": [1, 2, 3, 4],
+        "template_keys": ["language", "feature_subset", "nest_depth", "io_rule"]
+      }
+    },
+    {
+      "category": "B",
+      "name": "virtual_machine",
+      "task_definition": "实现栈机或寄存器虚拟机，支持指令译码、状态转移和嵌套执行。",
+      "environment_dependencies": {
+        "runtime": ["python3>=3.10"],
+        "tools": ["bash", "timeout"],
+        "limits": {
+          "max_cpu_seconds": 5,
+          "max_memory_mb": 256
+        }
+      },
+      "validation_scheme": {
+        "checks": [
+          "指令语义与参考实现一致",
+          "VM-in-VM 场景可运行",
+          "边界输入不崩溃"
+        ],
+        "failure_modes": ["decode_error", "stack_underflow", "environment_error", "io_misrouting"]
+      },
+      "generation": {
+        "count": 100,
+        "levels": [2, 3, 5],
+        "template_keys": ["isa", "word_size", "program_length", "nest_depth"]
+      }
+    },
+    {
+      "category": "C",
+      "name": "multi_layer_pipeline",
+      "task_definition": "构建 DSL→IR→Bytecode 等多阶段执行链，保证各层语义等价。",
+      "environment_dependencies": {
+        "runtime": ["python3>=3.10"],
+        "tools": ["bash", "diff", "timeout"],
+        "limits": {
+          "max_cpu_seconds": 8,
+          "max_memory_mb": 384
+        }
+      },
+      "validation_scheme": {
+        "checks": [
+          "端到端输出与参考实现一致",
+          "中间IR可解析",
+          "每层转换可回放"
+        ],
+        "failure_modes": ["parse_error", "transform_error", "semantic_drift", "io_misrouting"]
+      },
+      "generation": {
+        "count": 100,
+        "levels": [2, 3, 5],
+        "template_keys": ["dsl_grammar", "ir_form", "bytecode_isa", "stage_count"]
+      }
+    },
+    {
+      "category": "D",
+      "name": "io_routing_control",
+      "task_definition": "测试多源输入分发、控制流分派和分层输出转发/隔离语义。",
+      "environment_dependencies": {
+        "runtime": ["python3>=3.10"],
+        "tools": ["bash", "timeout", "awk"],
+        "limits": {
+          "max_cpu_seconds": 4,
+          "max_memory_mb": 256
+        }
+      },
+      "validation_scheme": {
+        "checks": [
+          "输入路由符合规则",
+          "输出通道隔离正确",
+          "异常控制流可复现"
+        ],
+        "failure_modes": ["io_misrouting", "control_flow_error", "nondeterminism"]
+      },
+      "generation": {
+        "count": 100,
+        "levels": [1, 2, 3, 5],
+        "template_keys": ["input_sources", "routing_rule", "forwarding_policy"]
+      }
+    },
+    {
+      "category": "E",
+      "name": "self_referential_adversarial",
+      "task_definition": "程序需分析/执行自身结构，含混淆逻辑与部分可观测条件。",
+      "environment_dependencies": {
+        "runtime": ["python3>=3.10"],
+        "tools": ["bash", "timeout"],
+        "limits": {
+          "max_cpu_seconds": 10,
+          "max_memory_mb": 512
+        }
+      },
+      "validation_scheme": {
+        "checks": [
+          "自引用行为与规范一致",
+          "对抗样例通过率",
+          "多次运行结果确定"
+        ],
+        "failure_modes": ["self_analysis_error", "obfuscation_failure", "nondeterminism", "recursion_failure"]
+      },
+      "generation": {
+        "count": 100,
+        "levels": [3, 4, 5],
+        "template_keys": ["self_mode", "obfuscation_pattern", "observability_mask"]
+      }
+    }
+  ]
+}

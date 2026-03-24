@@ -72,3 +72,20 @@ The validator checks required keys and structural consistency for core fields (`
 - pass rate per difficulty level,
 - max successful interpretation depth,
 - failure-mode distribution (`parsing_error`, `environment_error`, `recursion_failure`, `io_misrouting`).
+
+## 5类任务定义与批量生成（每类100个）
+
+`task_families.json` 已定义 A-E 五类任务的：
+
+- 任务定义（task definition）
+- 所依赖环境（environment dependencies）
+- 验证方案（validation scheme）
+- 生成配置（generation.count = 100）
+
+执行下面命令即可一次性生成 500 个任务：
+
+```bash
+python3 scripts/generate_mesis_tasks.py
+```
+
+输出目录：`mesis/generated/`，并包含 `manifest.json`。
