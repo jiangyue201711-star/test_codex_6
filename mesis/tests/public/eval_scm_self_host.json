@@ -1,0 +1,37 @@
+{
+  "id": "eval_scm_self_host",
+  "name": "Scheme eval self-host",
+  "category": "A",
+  "level": 4,
+  "description": "Implement a Scheme interpreter in Scheme that can interpret itself while preserving lexical scoping and deterministic output behavior.",
+  "io": {
+    "stdin": [
+      {"line_1": "interpreter_path"},
+      {"line_2": "target_program"},
+      {"remaining": "runtime_input"}
+    ],
+    "stdout": ["exact_result"]
+  },
+  "constraints": [
+    "no_builtin_eval",
+    "supports_lambda_define_if_begin",
+    "lexical_scoping"
+  ],
+  "tests": [
+    {
+      "name": "basic_arithmetic",
+      "input": "interpreter.scm\nprogram.scm\n(+ 1 2)\n",
+      "expected": "3"
+    },
+    {
+      "name": "function_application",
+      "input": "interpreter.scm\nprogram.scm\n((lambda (x) (+ x 5)) 7)\n",
+      "expected": "12"
+    },
+    {
+      "name": "nested_interpretation",
+      "input": "interpreter.scm\ninterpreter.scm\n(begin (define x 9) x)\n",
+      "expected": "9"
+    }
+  ]
+}
